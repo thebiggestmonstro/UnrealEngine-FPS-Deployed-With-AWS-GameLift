@@ -1,0 +1,39 @@
+# --- Unreal Engine 기본 무시 항목 ---
+Binaries/
+Build/
+DerivedDataCache/
+Intermediate/
+Saved/
+FileOpenOrder/
+
+# --- 소스 빌드 전용 및 에디터 생성 파일 ---
+.vs/
+*.sln
+*.suo
+*.opensdf
+*.sdf
+*.VC.db
+*.VC.opendb
+
+# --- 프로젝트 구성 파일 ---
+# 프로젝트 루트의 .uproject를 제외한 나머지 사용자 설정
+.ignore
+*.user
+*.userprefs
+*.v12.suo
+*.v15.suo
+
+# --- 플러그인 관련 ---
+# 플러그인 내의 빌드 결과물도 제외해야 합니다.
+Plugins/*/Binaries/
+Plugins/*/Intermediate/
+
+# --- macOS/Linux 관련 ---
+.DS_Store
+*.swp
+*.out
+*.app
+
+# --- 데이터 및 백업 ---
+/Backup/
+/Config/Generated/
