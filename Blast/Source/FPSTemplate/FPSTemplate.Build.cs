@@ -7,18 +7,27 @@ public class FPSTemplate : ModuleRules
 	public FPSTemplate(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
-	
-		PublicDependencyModuleNames.AddRange(new string[] { 
+
+        PublicDependencyModuleNames.AddRange(new string[] { 
 			"Core", 
 			"CoreUObject", 
 			"Engine", 
 			"InputCore", 
 			"EnhancedInput", 
 			"PhysicsCore",
-            "GameLiftServerSDK"
         });
 
-		PrivateDependencyModuleNames.AddRange(new string[] { "GameplayTags", "Slate", "SlateCore" });
+        if (Target.Type == TargetType.Server)
+        {
+            PublicDependencyModuleNames.Add("GameLiftServerSDK");
+        }
+        else
+        {
+            PublicDefinitions.Add("WITH_GAMELIFT=0");
+        }
+        bEnableExceptions = true;
+
+        PrivateDependencyModuleNames.AddRange(new string[] { "GameplayTags", "Slate", "SlateCore" });
 
 		// Uncomment if you are using Slate UI
 		// PrivateDependencyModuleNames.AddRange(new string[] { "Slate", "SlateCore" });
