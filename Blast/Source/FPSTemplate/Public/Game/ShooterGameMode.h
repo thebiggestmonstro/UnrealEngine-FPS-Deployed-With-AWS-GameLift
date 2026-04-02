@@ -6,6 +6,7 @@
 #include "Game/ShooterGameModeBase.h"
 #include "ShooterGameMode.generated.h"
 
+struct FServerParameters;
 struct FProcessParameters;
 
 DECLARE_LOG_CATEGORY_EXTERN(LogShooterGameMode, Log, All);
@@ -25,6 +26,7 @@ protected:
 	virtual void BeginPlay() override;
 
 private:
+	void SetServerParameters(FServerParameters& OutServerParameters);
 	void InitGameLift();
 
 private:
