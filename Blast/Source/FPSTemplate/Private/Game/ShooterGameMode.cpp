@@ -191,36 +191,14 @@ void AShooterGameMode::InitGameLift()
             return true;
         });
 
-    /* AWS Documentation
-    //GameServer.exe -port=7777 LOG=server.mylog
-    ProcessParameters->port = FURL::UrlConfig.DefaultPort;
-    TArray<FString> CommandLineTokens;
-    TArray<FString> CommandLineSwitches;
+    int32 Port = FURL::UrlConfig.DefaultPort;
+    FParse::Value(FCommandLine::Get(), TEXT("port="), Port);
+    ProcessParameters->port = Port;
 
-    FCommandLine::Parse(FCommandLine::Get(), CommandLineTokens, CommandLineSwitches);
-
-    for (FString SwitchStr : CommandLineSwitches)
-    {
-        FString Key;
-        FString Value;
-
-        if (SwitchStr.Split("=", &Key, &Value))
-        {
-            if (Key.Equals("port"))
-            {
-                ProcessParameters->port = FCString::Atoi(*Value);
-            }
-        }
-    }
-
-    //Here, the game server tells Amazon GameLift Servers where to find game session log files.
-    //At the end of a game session, Amazon GameLift Servers uploads everything in the specified 
-    //location and stores it in the cloud for access later.
     TArray<FString> Logfiles;
-    Logfiles.Add(TEXT("GameLiftUnrealApp/Saved/Logs/server.log"));
+    Logfiles.Add(TEXT("GameLiftUnrealApp/Saved/Logs/FPSTemplate.log"));
     ProcessParameters->logParameters = Logfiles;
 
-    //The game server calls ProcessReady() to tell Amazon GameLift Servers it's ready to host game sessions.
     UE_LOG(LogShooterGameMode, Log, TEXT("Calling Process Ready..."));
     FGameLiftGenericOutcome ProcessReadyOutcome = GameLiftSdkModule->ProcessReady(*ProcessParameters);
 
@@ -238,7 +216,6 @@ void AShooterGameMode::InitGameLift()
         UE_LOG(LogShooterGameMode, Log, TEXT("ERROR: %s"), *ProcessReadyError.m_errorMessage);
         UE_LOG(LogShooterGameMode, SetColor, TEXT("%s"), COLOR_NONE);
     }
-    */
 
     UE_LOG(LogShooterGameMode, Log, TEXT("InitGameLift completed!"));
 #endif
