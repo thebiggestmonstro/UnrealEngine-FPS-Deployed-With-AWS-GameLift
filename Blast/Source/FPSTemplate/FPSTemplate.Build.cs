@@ -20,6 +20,7 @@ public class FPSTemplate : ModuleRules
         if (Target.Type == TargetType.Server)
         {
             PublicDependencyModuleNames.Add("GameLiftServerSDK");
+            PublicDefinitions.Add("WITH_GAMELIFT=1");
         }
         else
         {
