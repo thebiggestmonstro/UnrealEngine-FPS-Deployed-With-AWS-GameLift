@@ -37,3 +37,6 @@ Plugins/*/Intermediate/
 # --- 데이터 및 백업 ---
 /Backup/
 /Config/Generated/
+
+# --- 기타 폴더 ---
+InstallBat/
