@@ -17,9 +17,9 @@ public class FPSTemplate : ModuleRules
 			"PhysicsCore",
         });
 
-        if (Target.Type == TargetType.Server)
+        if (Target.Type == TargetType.Server || Target.Type == TargetType.Editor)
         {
-            PublicDependencyModuleNames.Add("GameLiftServerSDK");
+            PublicDependencyModuleNames.Add("DedicatedServers");
             PublicDefinitions.Add("WITH_GAMELIFT=1");
         }
         else

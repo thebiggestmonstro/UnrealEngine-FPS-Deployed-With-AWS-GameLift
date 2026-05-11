@@ -3,24 +3,24 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Game/ShooterGameModeBase.h"
-#include "ShooterGameMode.generated.h"
+#include "GameFramework/GameMode.h"
+#include "DS_GameMode.generated.h"
 
 struct FServerParameters;
 struct FProcessParameters;
 
-DECLARE_LOG_CATEGORY_EXTERN(LogShooterGameMode, Log, All);
+DECLARE_LOG_CATEGORY_EXTERN(LogDS_GameMode, Log, All);
 
 /**
  * 
  */
 UCLASS()
-class FPSTEMPLATE_API AShooterGameMode : public AShooterGameModeBase
+class DEDICATEDSERVERS_API ADS_GameMode : public AGameMode
 {
 	GENERATED_BODY()
 	
 public:
-	AShooterGameMode();
+	ADS_GameMode();
 
 protected:
 	virtual void BeginPlay() override;
