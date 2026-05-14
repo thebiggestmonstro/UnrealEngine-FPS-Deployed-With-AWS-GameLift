@@ -11,13 +11,24 @@ public class DedicatedServers : ModuleRules
             "Core", 
             "CoreUObject", 
             "Engine",
-            "GameLiftServerSDK",
         });
+
+        if (Target.Type == TargetType.Server || Target.Type == TargetType.Editor)
+        {
+            PublicDependencyModuleNames.Add("GameLiftServerSDK");
+            PublicDefinitions.Add("WITH_GAMELIFT=1");
+        }
+        else
+        {
+            PublicDefinitions.Add("WITH_GAMELIFT=0");
+        }
+        bEnableExceptions = true;
 
         PrivateDependencyModuleNames.AddRange(new string[] 
 		{ 
 			"Slate", 
-			"SlateCore" 
+			"SlateCore",
+            "UMG"
 		});
 	}
 }

@@ -15,18 +15,8 @@ public class FPSTemplate : ModuleRules
 			"InputCore", 
 			"EnhancedInput", 
 			"PhysicsCore",
+            "DedicatedServers",
         });
-
-        if (Target.Type == TargetType.Server || Target.Type == TargetType.Editor)
-        {
-            PublicDependencyModuleNames.Add("DedicatedServers");
-            PublicDefinitions.Add("WITH_GAMELIFT=1");
-        }
-        else
-        {
-            PublicDefinitions.Add("WITH_GAMELIFT=0");
-        }
-        bEnableExceptions = true;
 
         PrivateDependencyModuleNames.AddRange(new string[] { "GameplayTags", "Slate", "SlateCore" });
 
