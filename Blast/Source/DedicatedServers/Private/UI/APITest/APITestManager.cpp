@@ -2,8 +2,43 @@
 
 
 #include "UI/APITest/APITestManager.h"
+#include "HttpModule.h"
+#include "Data/API/APIData.h"
+#include "GameplayTags/DedicatedServersTags.h"
+#include "Interfaces/IHttpResponse.h"
 
 void UAPITestManager::ListFleetsButtonClicked()
 {
-    GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, "List Fleets button clicked");
+    check(APIData);
+
+    TSharedRef<IHttpRequest> Request = FHttpModule::Get().CreateRequest();
+
+    Request->OnProcessRequestComplete().BindUObject(this, &UAPITestManager::ListFleets_Response);
+
+    const FString APIUrl = APIData->GetAPIEndpoint(DedicatedServersTags::GameSessionsAPI::ListFleets);
+
+    Request->SetURL(APIUrl);
+    Request->SetVerb(TEXT("GET"));
+    Request->SetHeader(TEXT("Content-Type"), TEXT("application/json"));
+    Request->ProcessRequest();
+    GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, "List Fleets Request Made");
+}
+
+void UAPITestManager::ListFleets_Response(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful)
+{
+    GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, "List Fleets Response Received");
+
+    TSharedPtr<FJsonObject> JsonObject;
+    TSharedRef<TJsonReader<>> JsonReader = TJsonReaderFactory<>::Create(Response->GetContentAsString());
+    if (FJsonSerializer::Deserialize(JsonReader, JsonObject))
+    {
+        if (JsonObject->HasField(TEXT("FleetIds")))
+        {
+            for (TSharedPtr<FJsonValue> Fleet : JsonObject->GetArrayField(TEXT("FleetIds")))
+            {
+                FString FleetString = Fleet->AsString();
+                GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FleetString);
+            }
+        }
+    }
 }
