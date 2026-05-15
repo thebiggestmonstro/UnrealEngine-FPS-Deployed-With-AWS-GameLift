@@ -6,6 +6,9 @@
 #include "Blueprint/UserWidget.h"
 #include "APITestOverlay.generated.h"
 
+class UListFleetsBox;
+class UAPITestManager;
+
 /**
  * 
  */
@@ -14,7 +17,17 @@ class DEDICATEDSERVERS_API UAPITestOverlay : public UUserWidget
 {
 	GENERATED_BODY()
 	
-	
-	
-	
+public:
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<UAPITestManager> APITestManagerClass;
+
+protected:
+	virtual void NativeConstruct() override;
+
+private:
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UListFleetsBox> ListFleetsBox;
+
+	UPROPERTY()
+	TObjectPtr<UAPITestManager> APITestManager;
 };

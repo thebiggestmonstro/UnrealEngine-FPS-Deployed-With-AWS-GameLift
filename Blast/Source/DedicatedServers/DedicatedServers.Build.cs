@@ -11,6 +11,7 @@ public class DedicatedServers : ModuleRules
             "Core", 
             "CoreUObject", 
             "Engine",
+            "GameplayTags",
         });
 
         if (Target.Type == TargetType.Server || Target.Type == TargetType.Editor)
