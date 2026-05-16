@@ -3,9 +3,12 @@
 
 #include "UI/APITest/APITestManager.h"
 #include "HttpModule.h"
+#include "JsonObjectConverter.h"
 #include "Data/API/APIData.h"
 #include "GameplayTags/DedicatedServersTags.h"
 #include "Interfaces/IHttpResponse.h"
+#include "UI/HTTP/HTTPRequestTypes.h"
+#include "DedicatedServers/DedicatedServers.h"
 
 void UAPITestManager::ListFleetsButtonClicked()
 {
@@ -30,15 +33,41 @@ void UAPITestManager::ListFleets_Response(FHttpRequestPtr Request, FHttpResponse
 
     TSharedPtr<FJsonObject> JsonObject;
     TSharedRef<TJsonReader<>> JsonReader = TJsonReaderFactory<>::Create(Response->GetContentAsString());
+
     if (FJsonSerializer::Deserialize(JsonReader, JsonObject))
     {
-        if (JsonObject->HasField(TEXT("FleetIds")))
+        // 俊矾 贸府
+        if (JsonObject->HasField(TEXT("errorType")) || JsonObject->HasField(TEXT("errorMessage")))
         {
-            for (TSharedPtr<FJsonValue> Fleet : JsonObject->GetArrayField(TEXT("FleetIds")))
-            {
-                FString FleetString = Fleet->AsString();
-                GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FleetString);
-            }
+            FString ErrorType = JsonObject->HasField(TEXT("errorType")) ? JsonObject->GetStringField(TEXT("errorType")) : TEXT("Unknown Error");
+            FString ErrorMessage = JsonObject->HasField(TEXT("errorMessage")) ? JsonObject->GetStringField(TEXT("errorMessage")) : TEXT("Unknown Error Message");
+
+            UE_LOG(LogDedicatedServers, Error, TEXT("Error Type: %s"), *ErrorType);
+            UE_LOG(LogDedicatedServers, Error, TEXT("Error Message: %s"), *ErrorMessage);
+
+            return;
         }
+
+        // fault 贸府
+        if (JsonObject->HasField(TEXT("$fault")))
+        {
+            FString ErrorType = JsonObject->HasField(TEXT("name")) ? JsonObject->GetStringField(TEXT("name")) : TEXT("Unknown Error");
+            UE_LOG(LogDedicatedServers, Error, TEXT("Error Type: %s"), *ErrorType);
+            return;
+        }
+
+        // 皋鸥单捞磐 贸府
+        if (JsonObject->HasField(TEXT("$metadata")))
+        {
+            TSharedPtr<FJsonObject> MetaDataJsonObject = JsonObject->GetObjectField(TEXT("$metadata"));
+            FDSMetaData DSMetaData;
+            FJsonObjectConverter::JsonObjectToUStruct(MetaDataJsonObject.ToSharedRef(), &DSMetaData);
+            DSMetaData.Dump();
+        }
+
+        // Payload 贸府
+        FDSListFleetsResponse ListFleetsResponse;
+        FJsonObjectConverter::JsonObjectToUStruct(JsonObject.ToSharedRef(), &ListFleetsResponse);
+        ListFleetsResponse.Dump();
     }
 }
