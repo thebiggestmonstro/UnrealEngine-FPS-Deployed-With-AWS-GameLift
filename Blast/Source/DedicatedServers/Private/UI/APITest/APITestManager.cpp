@@ -10,21 +10,18 @@
 #include "UI/HTTP/HTTPRequestTypes.h"
 #include "DedicatedServers/DedicatedServers.h"
 
-void UAPITestManager::ListFleetsButtonClicked()
+void UAPITestManager::ListFleets()
 {
     check(APIData);
 
     TSharedRef<IHttpRequest> Request = FHttpModule::Get().CreateRequest();
-
     Request->OnProcessRequestComplete().BindUObject(this, &UAPITestManager::ListFleets_Response);
-
     const FString APIUrl = APIData->GetAPIEndpoint(DedicatedServersTags::GameSessionsAPI::ListFleets);
 
     Request->SetURL(APIUrl);
     Request->SetVerb(TEXT("GET"));
     Request->SetHeader(TEXT("Content-Type"), TEXT("application/json"));
     Request->ProcessRequest();
-    GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, "List Fleets Request Made");
 }
 
 void UAPITestManager::ListFleets_Response(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful)
@@ -36,38 +33,18 @@ void UAPITestManager::ListFleets_Response(FHttpRequestPtr Request, FHttpResponse
 
     if (FJsonSerializer::Deserialize(JsonReader, JsonObject))
     {
-        // 俊矾 贸府
-        if (JsonObject->HasField(TEXT("errorType")) || JsonObject->HasField(TEXT("errorMessage")))
+        if (ContainsErrors(JsonObject))
         {
-            FString ErrorType = JsonObject->HasField(TEXT("errorType")) ? JsonObject->GetStringField(TEXT("errorType")) : TEXT("Unknown Error");
-            FString ErrorMessage = JsonObject->HasField(TEXT("errorMessage")) ? JsonObject->GetStringField(TEXT("errorMessage")) : TEXT("Unknown Error Message");
-
-            UE_LOG(LogDedicatedServers, Error, TEXT("Error Type: %s"), *ErrorType);
-            UE_LOG(LogDedicatedServers, Error, TEXT("Error Message: %s"), *ErrorMessage);
-
+            OnListFleetsResponseReceived.Broadcast(FDSListFleetsResponse(), false);
             return;
         }
 
-        // fault 贸府
-        if (JsonObject->HasField(TEXT("$fault")))
-        {
-            FString ErrorType = JsonObject->HasField(TEXT("name")) ? JsonObject->GetStringField(TEXT("name")) : TEXT("Unknown Error");
-            UE_LOG(LogDedicatedServers, Error, TEXT("Error Type: %s"), *ErrorType);
-            return;
-        }
+        DumpMetaData(JsonObject);
 
-        // 皋鸥单捞磐 贸府
-        if (JsonObject->HasField(TEXT("$metadata")))
-        {
-            TSharedPtr<FJsonObject> MetaDataJsonObject = JsonObject->GetObjectField(TEXT("$metadata"));
-            FDSMetaData DSMetaData;
-            FJsonObjectConverter::JsonObjectToUStruct(MetaDataJsonObject.ToSharedRef(), &DSMetaData);
-            DSMetaData.Dump();
-        }
-
-        // Payload 贸府
         FDSListFleetsResponse ListFleetsResponse;
         FJsonObjectConverter::JsonObjectToUStruct(JsonObject.ToSharedRef(), &ListFleetsResponse);
         ListFleetsResponse.Dump();
+
+        OnListFleetsResponseReceived.Broadcast(ListFleetsResponse, true);
     }
 }
