@@ -8,7 +8,6 @@
 #include "GameplayTags/DedicatedServersTags.h"
 #include "Interfaces/IHttpResponse.h"
 #include "UI/HTTP/HTTPRequestTypes.h"
-#include "DedicatedServers/DedicatedServers.h"
 
 void UAPITestManager::ListFleets()
 {
