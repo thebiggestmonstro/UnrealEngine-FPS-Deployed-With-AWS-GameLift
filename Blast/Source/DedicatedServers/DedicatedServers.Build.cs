@@ -20,11 +20,17 @@ public class DedicatedServers : ModuleRules
         if (Target.Type == TargetType.Server || Target.Type == TargetType.Editor)
         {
             PublicDependencyModuleNames.Add("GameLiftServerSDK");
-            PublicDefinitions.Add("WITH_GAMELIFT=1");
+            if (!PublicDefinitions.Contains("WITH_GAMELIFT=1"))
+            {
+                PublicDefinitions.Add("WITH_GAMELIFT=1");
+            }
         }
         else
         {
-            PublicDefinitions.Add("WITH_GAMELIFT=0");
+            if (!PublicDefinitions.Contains("WITH_GAMELIFT=0"))
+            {
+                PublicDefinitions.Add("WITH_GAMELIFT=0");
+            }
         }
         bEnableExceptions = true;
 
