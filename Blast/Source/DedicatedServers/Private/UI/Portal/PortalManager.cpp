@@ -133,5 +133,17 @@ void UPortalManager::CreatePlayerSession_Response(FHttpRequestPtr Request, FHttp
 		FDSPlayerSession PlayerSession;
 		FJsonObjectConverter::JsonObjectToUStruct(JsonObject.ToSharedRef(), &PlayerSession);
 		PlayerSession.Dump();
+
+		APlayerController* LocalPlayerController = GEngine->GetFirstLocalPlayerController(GetWorld());
+		if (IsValid(LocalPlayerController))
+		{
+			FInputModeGameOnly InputModeData;
+			LocalPlayerController->SetInputMode(InputModeData);
+			LocalPlayerController->SetShowMouseCursor(false);
+		}
+
+		const FString IpAndPort = PlayerSession.IpAddress + TEXT(":") + FString::FromInt(PlayerSession.Port);
+		const FName Address(*IpAndPort);
+		UGameplayStatics::OpenLevel(this, Address);
 	}
 }
