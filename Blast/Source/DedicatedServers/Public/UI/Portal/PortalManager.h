@@ -23,4 +23,10 @@ public:
 
 	UFUNCTION()
 	void QuitGame();
+
+	UPROPERTY(BlueprintAssignable)
+	FAPIStatusMessage SignUpStatusMessageDelegate;
+
+private:
+	void SignUp_Response(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
 };
