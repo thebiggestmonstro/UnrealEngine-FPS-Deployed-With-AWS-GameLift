@@ -65,12 +65,6 @@ private:
 	TObjectPtr<UPortalManager> PortalManager;
 
 	UFUNCTION()
-	void OnJoinGameButtonClicked();
-
-	UFUNCTION()
-	void UpdateJoinGameStatusMessage(const FString& StatusMessage, bool bResetJoinGameButton);
-
-	UFUNCTION()
 	void ShowSignInPage();
 
 	UFUNCTION()
