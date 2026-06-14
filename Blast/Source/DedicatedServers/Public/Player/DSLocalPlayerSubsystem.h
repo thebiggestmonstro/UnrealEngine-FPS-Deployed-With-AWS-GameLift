@@ -19,6 +19,8 @@ class DEDICATEDSERVERS_API UDSLocalPlayerSubsystem : public ULocalPlayerSubsyste
 	
 public:
 	void InitializeTokens(const FDSAuthenticationResult& AuthResult, UPortalManager* Manager);
+	void SetRefreshTokenTimer();
+	void UpdateTokens(const FString& AccessToken, const FString& IdToken);
 
 private:
 	UPROPERTY()
@@ -26,4 +28,7 @@ private:
 
 	UPROPERTY()
 	TObjectPtr<UPortalManager> PortalManager;
+
+	float TokenRefreshInterval = 2700.f;
+	FTimerHandle RefreshTimer;
 };
