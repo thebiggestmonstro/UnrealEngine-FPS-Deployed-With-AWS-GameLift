@@ -7,6 +7,7 @@
 #include "Data/API/APIData.h"
 #include "GameplayTags/DedicatedServersTags.h"
 #include "UI/HTTP/HTTPRequestTypes.h"
+#include "UI/Portal/PortalHUD.h"
 #include "Interfaces/IHttpResponse.h"
 #include "GameFramework/PlayerState.h"
 #include "Kismet/GameplayStatics.h"
@@ -59,6 +60,16 @@ void UPortalManager::SignIn_Response(FHttpRequestPtr Request, FHttpResponsePtr R
 		if (IsValid(LocalPlayerSubsystem))
 		{
 			LocalPlayerSubsystem->InitializeTokens(InitiateAuthResponse.AuthenticationResult, this);
+		}
+
+		APlayerController* LocalPlayerController = GEngine->GetFirstLocalPlayerController(GetWorld());
+		if (IsValid(LocalPlayerController))
+		{
+			APortalHUD* PortalHUD = Cast<APortalHUD>(LocalPlayerController->GetHUD());
+			if (IsValid(PortalHUD))
+			{
+				PortalHUD->OnSignIn();
+			}
 		}
 	}
 }
