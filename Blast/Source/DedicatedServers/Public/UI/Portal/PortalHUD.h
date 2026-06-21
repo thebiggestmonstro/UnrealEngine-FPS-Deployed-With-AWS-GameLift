@@ -27,6 +27,7 @@ public:
 
 	// HUDManagement Interfaces
 	virtual void OnSignIn() override;
+	virtual void OnSignOut() override;
 
 protected:
 	virtual void BeginPlay() override;
