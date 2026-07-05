@@ -19,8 +19,26 @@ class DEDICATEDSERVERS_API ADS_LobbyGameMode : public ADS_GameModeBase
 {
 	GENERATED_BODY()
 	
+public:
+	ADS_LobbyGameMode();
+	virtual void PostLogin(APlayerController* NewPlayer) override;
+
 protected:
 	virtual void BeginPlay() override;
+	virtual void OnCountdownTimerFinished(ECountdownTimerType Type) override;
+	void CancelCountdown();
+	virtual void Logout(AController* Exiting) override;
+	virtual void InitSeamlessTravelPlayer(AController* NewController) override;
+
+protected:
+	UPROPERTY()
+	ELobbyStatus LobbyStatus;
+
+	UPROPERTY(EditDefaultsOnly)
+	int32 MinPlayers;
+
+	UPROPERTY(EditDefaultsOnly)
+	TSoftObjectPtr<UWorld> MapToTravelTo;
 
 private:
 	void SetServerParameters(FServerParameters& OutServerParameters);
@@ -29,4 +47,7 @@ private:
 private:
 	UPROPERTY()
 	TObjectPtr<UDS_GameInstanceSubsystem> DSGameInstanceSubsystem;
+
+	UPROPERTY(EditDefaultsOnly)
+	FCountdownTimerHandle LobbyCountdownTimer;
 };

@@ -15,6 +15,26 @@
 
 DEFINE_LOG_CATEGORY(LogDS_LobbyGameMode);
 
+ADS_LobbyGameMode::ADS_LobbyGameMode()
+{
+    bUseSeamlessTravel = true;
+    LobbyStatus = ELobbyStatus::WaitingForPlayers;
+    MinPlayers = 1;
+    LobbyCountdownTimer.Type = ECountdownTimerType::LobbyCountdown;
+}
+
+void ADS_LobbyGameMode::PostLogin(APlayerController* NewPlayer)
+{
+    Super::PostLogin(NewPlayer);
+
+    if (GetNumPlayers() >= MinPlayers && LobbyStatus == ELobbyStatus::WaitingForPlayers)
+    {
+        LobbyStatus = ELobbyStatus::CountdownToSeamlessTravel;
+
+        StartCountdownTimer(LobbyCountdownTimer);
+    }
+}
+
 void ADS_LobbyGameMode::BeginPlay()
 {
     Super::BeginPlay();
@@ -22,6 +42,44 @@ void ADS_LobbyGameMode::BeginPlay()
 #if WITH_GAMELIFT
     InitGameLift();
 #endif
+}
+
+void ADS_LobbyGameMode::OnCountdownTimerFinished(ECountdownTimerType Type)
+{
+    Super::OnCountdownTimerFinished(Type);
+
+    if (Type == ECountdownTimerType::LobbyCountdown)
+    {
+        LobbyStatus = ELobbyStatus::SeamlessTravelling;
+
+        if (!MapToTravelTo.IsNull())
+        {
+            TrySeamlessTravel(MapToTravelTo);
+        }
+    }
+}
+
+void ADS_LobbyGameMode::Logout(AController* Exiting)
+{
+    Super::Logout(Exiting);
+
+    CancelCountdown();
+}
+
+void ADS_LobbyGameMode::InitSeamlessTravelPlayer(AController* NewController)
+{
+    Super::InitSeamlessTravelPlayer(NewController);
+
+    CancelCountdown();
+}
+
+void ADS_LobbyGameMode::CancelCountdown()
+{
+    if (GetNumPlayers() - 1 < MinPlayers && LobbyStatus == ELobbyStatus::CountdownToSeamlessTravel)
+    {
+        LobbyStatus = ELobbyStatus::WaitingForPlayers;
+        StopCountdownTimer(LobbyCountdownTimer);
+    }
 }
 
 #if WITH_GAMELIFT
