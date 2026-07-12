@@ -9,6 +9,7 @@ UDS_GameInstanceSubsystem::UDS_GameInstanceSubsystem()
 	bGameLiftInitialized = false;
 }
 
+#if WITH_GAMELIFT
 void UDS_GameInstanceSubsystem::InitGameLift(const FServerParameters& ServerParams)
 {
     if (bGameLiftInitialized)
@@ -16,7 +17,6 @@ void UDS_GameInstanceSubsystem::InitGameLift(const FServerParameters& ServerPara
         return;
     }
 
-#if WITH_GAMELIFT
     UE_LOG(LogDedicatedServers, Log, TEXT("Calling InitGameLift..."));
 
     // 1. GameLift SDK 모듈 로드
@@ -112,13 +112,17 @@ void UDS_GameInstanceSubsystem::InitGameLift(const FServerParameters& ServerPara
     }
 
     UE_LOG(LogDedicatedServers, Log, TEXT("InitGameLift completed!"));
-#endif
     bGameLiftInitialized = true;
 }
+#endif
 
 void UDS_GameInstanceSubsystem::ParseCommandLinePort(int32& OutPort)
 {
     int32 Port = FURL::UrlConfig.DefaultPort;
     FParse::Value(FCommandLine::Get(), TEXT("port="), Port);
+    OutPort = Port;
+
+#if WITH_GAMELIFT
     ProcessParameters.port = Port;
+#endif
 }

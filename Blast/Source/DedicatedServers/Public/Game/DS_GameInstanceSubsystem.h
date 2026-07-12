@@ -3,9 +3,12 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameLiftServerSDK.h"
 #include "Subsystems/GameInstanceSubsystem.h"
 #include "DS_GameInstanceSubsystem.generated.h"
+
+#if WITH_GAMELIFT
+#include "GameLiftServerSDK.h"
+#endif
 
 /**
  * 
@@ -17,13 +20,17 @@ class DEDICATEDSERVERS_API UDS_GameInstanceSubsystem : public UGameInstanceSubsy
 	
 public:
 	UDS_GameInstanceSubsystem();
-	void InitGameLift(const FServerParameters& ServerParams);
 
+#if WITH_GAMELIFT
+	void InitGameLift(const FServerParameters& ServerParams);
+#endif
 	UPROPERTY(BlueprintReadOnly)
 	bool bGameLiftInitialized;
 
 private:
 	void ParseCommandLinePort(int32& OutPort);
 
+#if WITH_GAMELIFT
 	FProcessParameters ProcessParameters;
+#endif
 };
