@@ -15,6 +15,7 @@ public class DedicatedServers : ModuleRules
             "HTTP",
             "Json", 
             "JsonUtilities",
+            "NetCore",
         });
 
         if (Target.Type == TargetType.Server || Target.Type == TargetType.Editor)
