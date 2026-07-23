@@ -6,6 +6,9 @@
 #include "Kismet/GameplayStatics.h"
 #include "Game/DS_GameInstanceSubsystem.h"
 #include "Player/DSPlayerController.h"
+#include "Game/DSGameState.h"
+#include "Lobby/LobbyPlayerInfo.h"
+#include "Lobby/LobbyState.h"
 
 #if WITH_GAMELIFT
 #include "GameLiftServerSDK.h"
@@ -47,6 +50,11 @@ FString ADS_LobbyGameMode::InitNewPlayer(APlayerController* NewPlayerController,
         DSPlayerController->Username = Username;
     }
 
+    if (LobbyStatus != ELobbyStatus::SeamlessTravelling)
+    {
+        AddPlayerInfoToLobbyState(NewPlayerController);
+    }
+
     return InitializedString;
 }
 
@@ -54,12 +62,7 @@ void ADS_LobbyGameMode::PostLogin(APlayerController* NewPlayer)
 {
     Super::PostLogin(NewPlayer);
 
-    if (GetNumPlayers() >= MinPlayers && LobbyStatus == ELobbyStatus::WaitingForPlayers)
-    {
-        LobbyStatus = ELobbyStatus::CountdownToSeamlessTravel;
-
-        StartCountdownTimer(LobbyCountdownTimer);
-    }
+    CheckAndStartLobbyCountdown();
 }
 
 void ADS_LobbyGameMode::BeginPlay()
@@ -91,19 +94,39 @@ void ADS_LobbyGameMode::Logout(AController* Exiting)
 {
     Super::Logout(Exiting);
 
-    CancelCountdown();
+    CheckAndStopLobbyCountdown();
 
     RemovePlayerSession(Exiting);
+
+    if (LobbyStatus != ELobbyStatus::SeamlessTravelling)
+    {
+        RemovePlayerInfoFromLobbyState(Exiting);
+    }
 }
 
 void ADS_LobbyGameMode::InitSeamlessTravelPlayer(AController* NewController)
 {
     Super::InitSeamlessTravelPlayer(NewController);
 
-    CancelCountdown();
+    CheckAndStartLobbyCountdown();
+
+    if (LobbyStatus != ELobbyStatus::SeamlessTravelling)
+    {
+        AddPlayerInfoToLobbyState(NewController);
+    }
 }
 
-void ADS_LobbyGameMode::CancelCountdown()
+void ADS_LobbyGameMode::CheckAndStartLobbyCountdown()
+{
+    if (GetNumPlayers() >= MinPlayers && LobbyStatus == ELobbyStatus::WaitingForPlayers)
+    {
+        LobbyStatus = ELobbyStatus::CountdownToSeamlessTravel;
+
+        StartCountdownTimer(LobbyCountdownTimer);
+    }
+}
+
+void ADS_LobbyGameMode::CheckAndStopLobbyCountdown()
 {
     if (GetNumPlayers() - 1 < MinPlayers && LobbyStatus == ELobbyStatus::CountdownToSeamlessTravel)
     {
@@ -259,4 +282,24 @@ void ADS_LobbyGameMode::InitGameLift()
         }
     }
 #endif
+}
+
+void ADS_LobbyGameMode::AddPlayerInfoToLobbyState(AController* Player) const
+{
+    ADSPlayerController* DSPlayerController = Cast<ADSPlayerController>(Player);
+    ADSGameState* DSGameState = GetGameState<ADSGameState>();
+    if (IsValid(DSGameState) && IsValid(DSGameState->LobbyState) && IsValid(DSPlayerController))
+    {
+        FLobbyPlayerInfo PlayerInfo(DSPlayerController->Username);
+        DSGameState->LobbyState->AddPlayerInfo(PlayerInfo);
+    }
+}
+void ADS_LobbyGameMode::RemovePlayerInfoFromLobbyState(AController* Player) const
+{
+    ADSPlayerController* DSPlayerController = Cast<ADSPlayerController>(Player);
+    ADSGameState* DSGameState = GetGameState<ADSGameState>();
+    if (IsValid(DSGameState) && IsValid(DSGameState->LobbyState) && IsValid(DSPlayerController))
+    {
+        DSGameState->LobbyState->RemovePlayerInfo(DSPlayerController->Username);
+    }
 }

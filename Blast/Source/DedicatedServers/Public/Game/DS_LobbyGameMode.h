@@ -29,7 +29,8 @@ public:
 protected:
 	virtual void BeginPlay() override;
 	virtual void OnCountdownTimerFinished(ECountdownTimerType Type) override;
-	void CancelCountdown();
+	void CheckAndStartLobbyCountdown();
+	void CheckAndStopLobbyCountdown();
 	virtual void PreLogin(const FString& Options, const FString& Address, const FUniqueNetIdRepl& UniqueId, FString& ErrorMessage) override;
 	virtual FString InitNewPlayer(APlayerController* NewPlayerController, const FUniqueNetIdRepl& UniqueId, const FString& Options, const FString& Portal = L"") override;
 	virtual void Logout(AController* Exiting) override;
@@ -51,6 +52,8 @@ private:
 #endif	
 	void TryAcceptPlayerSession(const FString& PlayerSessionId, const FString& Username, FString& OutErrorMessage);
 	void InitGameLift();
+	void AddPlayerInfoToLobbyState(AController* Player) const;
+	void RemovePlayerInfoFromLobbyState(AController* Player) const;
 
 private:
 	UPROPERTY()
