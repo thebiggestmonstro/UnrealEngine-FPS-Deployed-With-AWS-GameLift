@@ -39,4 +39,5 @@ protected:
 	TSoftObjectPtr<UWorld> LobbyMap;
 
 	void SetClientInputEnabled(bool bEnabled);
+	void OnMatchEnded();
 };
