@@ -25,6 +25,9 @@ public:
 
 	UPROPERTY()
 	FOnRetrieveMatchStatsResponseReceived OnRetrieveMatchStatsResponseReceived;
+
+	UPROPERTY()
+	FAPIStatusMessage RetrieveMatchStatsStatusMesssage;
 	
 private:
 	void RecordMatchStats_Response(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
