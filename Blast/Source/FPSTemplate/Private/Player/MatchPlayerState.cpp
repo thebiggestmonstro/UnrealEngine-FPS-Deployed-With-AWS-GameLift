@@ -5,6 +5,7 @@
 #include "UI/HTTP/HTTPRequestTypes.h"
 #include "ShooterTypes/ShooterTypes.h"
 #include "UI/Elims/SpecialElimWidget.h"
+#include "Player/DSLocalPlayerSubsystem.h"
 
 AMatchPlayerState::AMatchPlayerState()
 {

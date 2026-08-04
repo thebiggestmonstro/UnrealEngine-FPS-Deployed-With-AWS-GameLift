@@ -118,7 +118,10 @@ void UGameSessionsManager::HandleGameSessionStatus(const FString& Status, const 
 	if (Status.Equals(TEXT("ACTIVE")))
 	{
 		BroadcastJoinGameSessionMessage.Broadcast(TEXT("Found active Game Session. Creating a Player Session..."), false);
-		TryCreatePlayerSession(GetUniquePlayerId(), SessionId);
+		if (UDSLocalPlayerSubsystem* DSLocalPlayerSubsystem = GetDSLocalPlayerSubsystem(); IsValid(DSLocalPlayerSubsystem))
+		{
+			TryCreatePlayerSession(DSLocalPlayerSubsystem->Username, SessionId);
+		}
 	}
 	else if (Status.Equals(TEXT("ACTIVATING")))
 	{
