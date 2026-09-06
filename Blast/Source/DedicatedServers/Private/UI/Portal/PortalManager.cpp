@@ -273,6 +273,13 @@ void UPortalManager::SignOut_Response(FHttpRequestPtr Request, FHttpResponsePtr 
 		}
 	}
 
+	if (UDSLocalPlayerSubsystem* LocalPlayerSubsystem = GetDSLocalPlayerSubsystem(); IsValid(LocalPlayerSubsystem))
+	{
+		LocalPlayerSubsystem->Username = "";
+		LocalPlayerSubsystem->Password = "";
+		LocalPlayerSubsystem->Email = "";
+	}
+
 	APlayerController* LocalPlayerController = GEngine->GetFirstLocalPlayerController(GetWorld());
 	if (IsValid(LocalPlayerController))
 	{
